@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: Purpose: Installs Salad application with required settings, GPU drivers, and dependencies
-:: Logs all actions to SaladInstallFiles\InstallSalad.log (UTF-8 encoded).
+:: Logs all actions to InstallSalad.log (UTF-8 encoded).
 :: Usage: Run as Administrator, optional -y flag for non-interactive mode
 
 :: Set console code page to UTF-8
