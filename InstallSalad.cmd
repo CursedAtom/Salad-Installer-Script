@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: Purpose: Installs Salad application with required settings, GPU drivers, and dependencies
-:: Logs all actions to SaladInstallFiles\InstallSalad.log (UTF-8 encoded)
+:: Logs all actions to SaladInstallFiles\InstallSalad.log (UTF-8 encoded).
 :: Usage: Run as Administrator, optional -y flag for non-interactive mode
 
 :: Set console code page to UTF-8
@@ -10,7 +10,7 @@ chcp 65001 >nul
 
 :: Define log file and temp directory
 set "tempDir=SaladInstallFiles"
-set "logFile=%tempDir%\InstallSalad.log"
+set "logFile=InstallSalad.log"
 
 :: Initialize log file with UTF-8 BOM (fixes non-unicode characters used in WSL installation)
 echo. > "%logFile%"
@@ -40,6 +40,22 @@ if %errorlevel% neq 0 (
 )
 echo Running with elevation. >> "%logFile%" 2>&1
 echo Running with elevation.
+
+:: Check Virtualization
+for /f "tokens=2 delims==" %%i in ('bcdedit /enum ^| find "hypervisorlaunchtype"') do set "vmStatus=%%i"
+if "!vmStatus!"=="Off" (
+    echo Virtualization is not enabled. Enabling it may require a reboot.
+    if not "%1"=="-y" pause
+    bcdedit /set hypervisorlaunchtype Auto >nul 2>&1
+    if !errorlevel! equ 0 (
+        echo Virtualization enabled. A reboot is required to apply changes.
+    ) else (
+        echo Failed to enable virtualization automatically. Please enable it in BIOS/UEFI.
+    )
+    if not "%1"=="-y" pause
+) else (
+    echo Virtualization is enabled.
+)
 
 :: Detect GPU hardware
 set "nvidiaPresent=false"
